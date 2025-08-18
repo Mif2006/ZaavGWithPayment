@@ -1,7 +1,16 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    domains: [
+      'static.tildacdn.com'
+  ]
+  },
+  experimental: {
+    allowedDevOrigins: [
+      'https://groundlessly-special-anoa.cloudpub.ru',
+      '*.cloudpub.ru',
+    ],
+  },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

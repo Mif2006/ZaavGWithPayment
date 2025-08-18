@@ -1,26 +1,108 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  color: #2D2D2D;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark body {
+  color: #E2E2E2;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Z-index layers */
+.z-sidebar {
+  z-index: 60;
+}
+
+.z-cart {
+  z-index: 50;
+}
+
+/* Backdrop blur support */
+@supports (backdrop-filter: blur(8px)) {
+  .backdrop-blur-lg {
+    backdrop-filter: blur(8px);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.path {
+  stroke-dashoffset: 1000;
+  animation: dash 3s ease-in-out forwards;
+}
+
+.grid-line {
+  animation: fadeIn 2s ease-in-out forwards;
+  opacity: 0;
+}
+
+.grid-overlay {
+  animation: pulse 3s infinite alternate;
+}
+
+.grid-background {
+  opacity: 0.7;
+  animation: pulse 3s infinite alternate;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  from {
+    opacity: 0.3;
+    filter: brightness(0.8) blur(0.5px);
+  }
+  to {
+    opacity: 0.7;
+    filter: brightness(1.2) blur(0px);
+  }
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .path {
+    animation: dash 2s ease-in-out forwards;
+  }
+  
+  .wavy-path {
+    animation: dashWavy 3s ease-in-out forwards;
+  }
+}
+
+/* Additional responsive adjustments for timeline */
+@media (max-width: 768px) {
+  .timeline-container {
+    height: 500px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .timeline-container {
+    height: 480px !important;
+  }
 }

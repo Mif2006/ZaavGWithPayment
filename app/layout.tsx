@@ -6,6 +6,8 @@ import { CatalogProduct } from "@/lib/types/catalog";
 import Catalog from "@/components/Catalog";
 import { CatalogProvider } from "@/lib/context/ProductContext";
 import { CartProvider } from "@/lib/context/CartContext";
+import Navbar from "@/components/main/Navbar";
+import MinimizedNavbar from "@/components/MinimizedNavbar";
 
 // Configure the fonts
 const playfair = Playfair_Display({
@@ -34,7 +36,10 @@ export default function RootLayout({
     <html lang="en" className={`${playfair.variable} ${montserrat.variable}`}>
       <CartProvider>
 
-      <body>{children}</body>
+      <body>
+        <Navbar />
+
+        {children}</body>
 
       </CartProvider>
     </html>

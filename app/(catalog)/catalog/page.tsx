@@ -8,7 +8,7 @@ import CatalogHeader from '@/components/catalog/CatalogHeader';
 import CatalogFilters from '@/components/catalog/CatalogFilters';
 import CatalogContent from '@/components/catalog/CatalogContent';
 import CatalogStatusBar from '@/components/catalog/CatalogStatusBar';
-import { fetchCatalogData } from '@/lib/actions/catalog.actions';
+import { useCatalog } from '@/lib/context/ProductContext'; // Import context
 import type { ProductData } from '@/lib/actions/catalog.actions';
 
 interface Category {
@@ -28,9 +28,7 @@ const categories: Category[] = [
 ];
 
 export default function CatalogPage() {
-  const [items, setItems] = React.useState<ProductData[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
+  const { products, loading, error } = useCatalog(); // Get data from context
   const [activeCategory, setActiveCategory] = React.useState('all');
   const [activeCollection, setActiveCollection] = React.useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -38,30 +36,8 @@ export default function CatalogPage() {
   const [selectedProductForSize, setSelectedProductForSize] = React.useState<any>(null);
   const [showSizeModal, setShowSizeModal] = React.useState(false);
 
-  const fetchData = React.useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await fetchCatalogData();
-      setItems(data);
-      console.log('Raw ', data);
-      // const transformedData = data.map(transformProductData);
-      // console.log('Transformed ', transformedData);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch catalog data');
-      console.error('Error fetching catalog:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  React.useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  const refetch = () => {
-    fetchData();
-  };
+  // Use context data instead of local state
+  const items = products;
 
   const collections = React.useMemo(() => {
     const uniqueCollections = [...new Set(items.filter(item => item.collection && item.collection !== 'FALSE').map(item => item.collection))];
@@ -149,7 +125,7 @@ export default function CatalogPage() {
             <p className="text-red-600 dark:text-red-400 mb-4">Failed to load catalog</p>
             <p className="text-gray-600 dark:text-dark-muted mb-4 text-sm">{error}</p>
             <button
-              onClick={refetch}
+              onClick={() => window.location.reload()} // Simple refresh
               className="px-4 py-2 bg-purple-gradient rounded-lg text-white font-medium hover:opacity-90 transition-opacity"
             >
               Try Again
@@ -161,7 +137,6 @@ export default function CatalogPage() {
   }
 
   return (
-
     <div className="min-h-screen relative">
       {/* Background Image */}
       <div 
@@ -179,7 +154,7 @@ export default function CatalogPage() {
       </div>
       
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8  md:pt-[120px] py-8">
         <CatalogHeader />
         
         <motion.div
@@ -200,7 +175,7 @@ export default function CatalogPage() {
             activeCollection={activeCollection}
             filteredItemsCount={filteredItems.length}
             categories={categories}
-            refetch={refetch}
+            refetch={() => window.location.reload()} // Simple refresh
             clearSearch={clearSearch}
             clearFilters={clearFilters}
             setActiveCategory={setActiveCategory}

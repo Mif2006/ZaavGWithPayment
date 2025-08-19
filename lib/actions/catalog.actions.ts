@@ -67,7 +67,7 @@ export const fetchCatalogData = async (): Promise<ProductData[]> => {
 //     throw error;
 //   }
 // };
-
+// lib/actions/catalog.actions.ts
 export const parseSizes = async (sizesString: string): Promise<Record<string, number>> => {
   try {
     // Remove any extra whitespace
@@ -78,54 +78,64 @@ export const parseSizes = async (sizesString: string): Promise<Record<string, nu
       return {};
     }
     
-    // Check if the string is already a valid JSON object (starts and ends with curly braces)
-    if (cleanString.startsWith('{') && cleanString.endsWith('}')) {
+    // Handle properly formatted JSON
+    if (cleanString.startsWith('{') && cleanString.endsWith('}') && cleanString.includes(':')) {
       try {
-        // First try to parse as-is
         const parsed = JSON.parse(cleanString);
-        
-        // Convert all values to numbers and ensure proper format
-        const result: Record<string, number> = {};
-        for (const [size, quantity] of Object.entries(parsed)) {
-          result[size] = Number(quantity);
+        if (typeof parsed === 'object' && parsed !== null) {
+          const result: Record<string, number> = {};
+          for (const [size, quantity] of Object.entries(parsed)) {
+            const numericQuantity = Number(quantity);
+            if (!isNaN(numericQuantity)) {
+              result[size] = numericQuantity;
+            }
+          }
+          return result;
         }
-        
-        return result;
       } catch (jsonError) {
-        // If JSON parsing fails, fall back to comma-separated parsing
-        console.warn('JSON parsing failed, falling back to comma-separated parsing:', jsonError);
+        // Fall through to manual parsing
       }
     }
     
-    // Handle comma-separated key-value pairs (e.g., "1:10, 2:5" or "Small:5, Large:10")
-    // This also serves as fallback for malformed JSON
-    {
-      const result: Record<string, number> = {};
+    // Handle malformed cases like "{16 {15" or "16:1, 17:2"
+    const result: Record<string, number> = {};
+    
+    // Remove outer braces if present
+    let workingString = cleanString;
+    if (workingString.startsWith('{')) {
+      workingString = workingString.substring(1);
+    }
+    if (workingString.endsWith('}')) {
+      workingString = workingString.substring(0, workingString.length - 1);
+    }
+    
+    // Split by comma and clean each part
+    const parts = workingString.split(',').map(part => part.trim());
+    
+    for (const part of parts) {
+      // Remove any remaining braces
+      const cleanPart = part.replace(/[{}]/g, '').trim();
       
-      // Split by comma and process each pair
-      const pairs = cleanString.split(',');
-      
-      for (const pair of pairs) {
-        const trimmedPair = pair.trim();
-        if (trimmedPair) {
-          // Split by colon to get key and value
-          const [key, value] = trimmedPair.split(':');
-          if (key && value) {
-            const trimmedKey = key.trim();
-            const trimmedValue = value.trim();
-            result[trimmedKey] = Number(trimmedValue) || 0;
-          }
+      // Look for key:value pattern
+      const colonIndex = cleanPart.indexOf(':');
+      if (colonIndex > 0) {
+        const key = cleanPart.substring(0, colonIndex).trim();
+        const value = cleanPart.substring(colonIndex + 1).trim();
+        const numericValue = Number(value);
+        
+        if (key && !isNaN(numericValue)) {
+          result[key] = numericValue;
         }
       }
-      
-      return result;
+      // Skip malformed parts that don't have proper key:value format
     }
+    
+    return result;
   } catch (error) {
     console.error('Error parsing sizes:', error);
     return {};
   }
 };
-
 export const parseBackImages = async (backImagesString: string): Promise<string[]> => {
   try {
     // Remove any extra whitespace and parse the JSON array

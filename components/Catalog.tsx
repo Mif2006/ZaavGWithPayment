@@ -5,7 +5,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Share2, ShoppingCart, Package } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useCart } from '@/lib/context/CartContext';
 import type { CatalogItem } from '@/lib/hooks/useCatalogData';
 
 interface CatalogProps {
@@ -17,6 +16,49 @@ interface CatalogProps {
   setShowSizeModal: (show: boolean) => void;
 }
 
+// Function to add item to localStorage cart
+// Function to add item to localStorage cart
+const addToLocalStorageCart = (item: any) => {
+  try {
+    // Generate a unique ID for the cart item
+    const cartItemId = `${item.name}-${item.size || 'nosize'}-${Date.now()}`;
+    
+    // Get existing cart from localStorage
+    const storedCart = localStorage.getItem('cart');
+    let cartItems: any[] = storedCart ? JSON.parse(storedCart) : [];
+    
+    // Check if item already exists in cart
+    const existingItemIndex = cartItems.findIndex(
+      (cartItem: any) => cartItem.id === cartItemId
+    );
+    
+    if (existingItemIndex >= 0) {
+      // Update quantity if item exists
+      cartItems[existingItemIndex].quantity += 1;
+    } else {
+      // Add new item
+      cartItems.push({
+        ...item,
+        id: cartItemId,
+        quantity: 1
+      });
+    }
+    
+    // Save updated cart to localStorage
+    localStorage.setItem('cart', JSON.stringify(cartItems));
+    
+    // Dispatch a custom event to notify CartSheet of changes
+    window.dispatchEvent(new CustomEvent('cartUpdated'));
+    
+    // Optional: Show success feedback
+    console.log('Item added to cart:', item);
+    return true;
+  } catch (error) {
+    console.error('Error adding to cart:', error);
+    return false;
+  }
+};
+
 const Catalog: React.FC<CatalogProps> = ({ 
   items, 
   onItemClick, 
@@ -26,25 +68,42 @@ const Catalog: React.FC<CatalogProps> = ({
   setShowSizeModal 
 }) => {
   const router = useRouter();
-  const { dispatch, wishlist, toggleWishlist } = useCart();
+  
+  // Mock wishlist functions (you can implement these later)
+  const wishlist = [];
+  const toggleWishlist = (item: CatalogItem) => {
+    console.log('Toggle wishlist:', item);
+    // Implement wishlist logic
+  };
   
   const handleAddToCart = (item: CatalogItem, e: React.MouseEvent) => {
     e.stopPropagation();
     
     // If item has sizes, show size selection modal
-    if (Object.keys(item.sizes).length > 0) {
+    if (item.sizes && Object.keys(item.sizes).length > 0) {
       setSelectedProduct(item);
       setShowSizeModal(true);
     } else {
       // If no sizes, add directly to cart
-      dispatch({ type: 'ADD_ITEM', payload: { ...item, quantity: 1 } });
+      const cartItem = {
+        name: item.name,
+        price: item.price || 0,
+        image: item.imgLink || item.imageUrl,
+        // Add other properties you want to store
+      };
+      
+      const success = addToLocalStorageCart(cartItem);
+      if (success) {
+        // Optional: Show visual feedback
+        // You could add a toast notification here
+      }
     }
   };
   
   const handleLearnMore = (item: CatalogItem, e: React.MouseEvent) => {
     e.stopPropagation();
     // Convert product name to URL-friendly format
-    const productName = item.name.toLowerCase().replace(/\s+/g, '-');
+    const productName = encodeURIComponent(item.name);
     router.push(`/catalog/item/${productName}`);
   };
   
@@ -61,7 +120,7 @@ const Catalog: React.FC<CatalogProps> = ({
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-2">
       {items.map((item, index) => (
         <motion.div
-          key={item.id}
+          key={item.id || index}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -74,18 +133,18 @@ const Catalog: React.FC<CatalogProps> = ({
           }}
         >
           <div className="relative aspect-square overflow-hidden cursor-pointer" onClick={(e) => handleLearnMore(item, e)}>
-            {item.isNew && (
+            {item.newItem === 'TRUE' && (
               <div className="absolute top-2 left-2 z-10 px-2 py-1 bg-purple-gradient rounded-full">
                 <span className="text-xs text-white font-medium">New</span>
               </div>
             )}
-            {item.collection && (
+            {item.collection && item.collection !== 'FALSE' && (
               <div className="absolute top-2 right-2 z-10 px-2 py-1 bg-black/70 dark:bg-black/70 backdrop-blur-sm rounded-full shadow-sm border border-white/20 dark:border-white/20">
                 <span className="text-xs text-purple-300 dark:text-purple-300 font-medium capitalize">{item.collection}</span>
               </div>
             )}
             <img
-              src={item.imageUrl}
+              src={item.imgLink || item.imageUrl}
               alt={item.name}
               className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
               onError={(e) => {
@@ -107,7 +166,7 @@ const Catalog: React.FC<CatalogProps> = ({
               >
                 <Heart 
                   size={18} 
-                  className={wishlist.some(w => w.id === item.id) 
+                  className={wishlist.some((w: any) => w.id === item.id) 
                     ? "text-red-500 fill-red-500" 
                     : "text-purple-500 dark:text-purple-400"
                   } 
@@ -119,11 +178,13 @@ const Catalog: React.FC<CatalogProps> = ({
             <div className="flex justify-between items-start mb-3">
               <h3 className="text-sm font-serif text-white dark:text-white line-clamp-2 font-medium">{item.name}</h3>
               <p className="text-lg font-serif text-purple-300 dark:text-purple-300 whitespace-nowrap ml-2 font-semibold">
-                ₽{item.price.toLocaleString()}
+                ₽{(item.price || 0).toLocaleString()}
               </p>
             </div>
             
-            <p className="text-xs text-gray-300 dark:text-gray-300 mb-4 line-clamp-2 leading-relaxed">{item.description}</p>
+            <p className="text-xs text-gray-300 dark:text-gray-300 mb-4 line-clamp-2 leading-relaxed">
+              {item.description || 'No description available'}
+            </p>
             <div className="flex space-x-2">
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -141,12 +202,15 @@ const Catalog: React.FC<CatalogProps> = ({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={(e) => handleAddToCart(item, e)}
-                disabled={Object.keys(item.sizes).length > 0 && Object.values(item.sizes).every(qty => qty === 0)}
+                disabled={item.sizes && Object.keys(item.sizes).length > 0 && Object.values(item.sizes).every(qty => qty === 0)}
                 className="flex-1 px-3 py-2 bg-purple-gradient rounded-lg text-white font-medium text-xs hover:opacity-90 hover:shadow-lg transition-all duration-200 flex items-center justify-center space-x-1 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+                style={{
+                  background: 'linear-gradient(to right, #8B5CF6, #6366F1)'
+                }}
               >
                 <ShoppingCart size={14} />
                 <span>
-                  {Object.keys(item.sizes).length > 0 && Object.values(item.sizes).every(qty => qty === 0) 
+                  {item.sizes && Object.keys(item.sizes).length > 0 && Object.values(item.sizes).every(qty => qty === 0) 
                     ? 'Out of Stock' 
                     : 'Add to Cart'
                   }

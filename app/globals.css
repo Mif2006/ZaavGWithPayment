@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
 @custom-variant dark (&:is(.dark *));
 
 /* IMPORTANT: Add this section */
@@ -326,11 +327,44 @@ body {
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-@layer base {
+/* @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
   }
+} */
+
+.text {
+  background-color: black;
+  color: white;
+  /* font-size: 20vw; */
+  font-weight: bold;
+  
+  text-align: center;
+  mix-blend-mode: multiply;
 }
+
+.text2 {
+  background-color: black;
+  color: white;
+  /* font-size: 20vw; */
+  font-weight: bold;
+  
+  text-align: center;
+  mix-blend-mode: multiply;
+}
+
+.video-carousel_container {
+  @apply relative sm:w-[70vw] w-[88vw] md:h-[70vh] sm:h-[50vh] h-[35vh]
+}
+
+.screen-max-width {
+  margin-inline-start: auto;
+  margin-inline-end: auto;
+  position: relative;
+  max-width: 1120px;
+}
+
+

@@ -133,16 +133,16 @@ const Catalog: React.FC<CatalogProps> = ({
           }}
         >
           <div className="relative aspect-square overflow-hidden cursor-pointer" onClick={(e) => handleLearnMore(item, e)}>
-            {item.newItem === 'TRUE' && (
+            {item.isNew.toString().toUpperCase() === 'TRUE' && (
               <div className="absolute top-2 left-2 z-10 px-2 py-1 bg-purple-gradient rounded-full">
                 <span className="text-xs text-white font-medium">New</span>
               </div>
             )}
-            {item.collection && item.collection !== 'FALSE' && (
+            {/* {item.collection && item.collection !== 'FALSE' && (
               <div className="absolute top-2 right-2 z-10 px-2 py-1 bg-black/70 dark:bg-black/70 backdrop-blur-sm rounded-full shadow-sm border border-white/20 dark:border-white/20">
                 <span className="text-xs text-purple-300 dark:text-purple-300 font-medium capitalize">{item.collection}</span>
               </div>
-            )}
+            )} */}
             <img
               src={item.imgLink || item.imageUrl}
               alt={item.name}
@@ -174,7 +174,7 @@ const Catalog: React.FC<CatalogProps> = ({
               </button>
             </div>
           </div>
-          <div className="p-4 bg-gradient-to-b from-black/50 to-black/30 dark:from-black/50 dark:to-black/30 backdrop-blur-sm">
+          <div className="p-4 h-full to-black/30 dark:from-black/50 dark:to-black/30 backdrop-blur-sm">
             <div className="flex justify-between items-start mb-3">
               <h3 className="text-sm font-serif text-white dark:text-white line-clamp-2 font-medium">{item.name}</h3>
               <p className="text-lg font-serif text-purple-300 dark:text-purple-300 whitespace-nowrap ml-2 font-semibold">
@@ -183,7 +183,7 @@ const Catalog: React.FC<CatalogProps> = ({
             </div>
             
             <p className="text-xs text-gray-300 dark:text-gray-300 mb-4 line-clamp-2 leading-relaxed">
-              {item.description || 'No description available'}
+              {item.collection || 'No description available'}
             </p>
             <div className="flex space-x-2">
               <motion.button

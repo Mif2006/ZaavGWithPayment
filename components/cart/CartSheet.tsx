@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { X, ShoppingCart, Plus, Minus, Trash2 } from 'lucide-react';
+import { createYooKassaPayment } from '@/lib/actions/payment.actions';
 
 // Types for cart items
 interface CartItem {
@@ -28,70 +29,54 @@ interface CartItem {
 const CartSheet = () => {
   // State for cart items
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false)
+
+  const [cartStrings, setCartStrings] = useState([])
 
   // Load cart from localStorage on component mount
-  useEffect(() => {
-    const loadCartFromStorage = () => {
-      try {
-        const storedCart = localStorage.getItem('cart');
-        if (storedCart) {
-          const parsedCart = JSON.parse(storedCart);
-          // Ensure it's an array
-          if (Array.isArray(parsedCart)) {
-            setCartItems(parsedCart);
-          } else {
-            console.warn('Cart data is not an array, resetting to empty array');
-            setCartItems([]);
-          }
-        } else {
-          setCartItems([]);
-        }
-      } catch (error) {
-        console.error('Error loading cart from localStorage:', error);
-        setCartItems([]); // Fallback to empty array
-      }
-    };
-
-    loadCartFromStorage();
-  }, []);
-
-  // In CartSheet.tsx, add this useEffect:
+// Remove the second useEffect and replace with this single one:
 useEffect(() => {
-    const handleCartUpdate = () => {
-      // Reload cart data when notified
+  // Load cart from localStorage on component mount
+  const loadCartFromStorage = () => {
+    try {
       const storedCart = localStorage.getItem('cart');
-      if (storedCart) {
-        try {
-          const parsedCart = JSON.parse(storedCart);
-          if (Array.isArray(parsedCart)) {
-            setCartItems(parsedCart);
-          }
-        } catch (error) {
-          console.error('Error parsing cart data:', error);
+      if (storedCart && storedCart !== "null" && storedCart !== "undefined") {
+        const parsedCart = JSON.parse(storedCart);
+        if (Array.isArray(parsedCart)) {
+          setCartItems(parsedCart);
+        } else {
+          console.warn('Cart data is not an array');
           setCartItems([]);
         }
-      } else {
-        setCartItems([]);
       }
-    };
-  
-    // Listen for cart updates
-    window.addEventListener('cartUpdated', handleCartUpdate);
-  
-    // Cleanup listener on unmount
-    return () => {
-      window.removeEventListener('cartUpdated', handleCartUpdate);
-    };
-  }, []);
+    } catch (error) {
+      console.error('Error loading cart from localStorage:', error);
+      setCartItems([]);
+    }
+  };
+
+  loadCartFromStorage();
+
+  // Handle cart updates from other parts of the app
+  const handleCartUpdate = () => {
+    loadCartFromStorage(); // Reuse the same loading function
+  };
+
+  window.addEventListener('cartUpdated', handleCartUpdate);
+
+  return () => {
+    window.removeEventListener('cartUpdated', handleCartUpdate);
+  };
+}, []); // This dependency array should remain empty
 
   // Save cart to localStorage whenever cartItems change
-  useEffect(() => {
-    try {
-      localStorage.setItem('cart', JSON.stringify(cartItems));
-    } catch (error) {
-      console.error('Error saving cart to localStorage:', error);
-    }
-  }, [cartItems]);
+  // useEffect(() => {
+  //   try {
+  //     localStorage.setItem('cart', JSON.stringify(cartItems));
+  //   } catch (error) {
+  //     console.error('Error saving cart to localStorage:', error);
+  //   }
+  // }, [cartItems]);
 
   const updateQuantity = (id: string, newQuantity: number) => {
     if (newQuantity < 1) {
@@ -120,6 +105,29 @@ useEffect(() => {
     return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
+  const handleCheckout = async () => {
+    setIsLoading(true)
+
+    const itemNames = cartItems.map(item => item.name);
+
+    const num = getTotalPrice().toFixed(2).toString()
+
+    console.log(num)
+    console.log(itemNames)
+
+    try {
+      const confirmationUrl = await createYooKassaPayment({
+        value: num,
+        orderId: "12234",
+        userId: '52948',
+        itemData: itemNames,
+      })
+
+      window.location.href = confirmationUrl;
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -176,7 +184,7 @@ useEffect(() => {
               {cartItems.map((item) => (
                 <div 
                   key={item.id} 
-                  className="flex items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/10"
+                  className="flex max-w-[90%] items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/10"
                 >
                   {item.image ? (
                     <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0">
@@ -241,7 +249,7 @@ useEffect(() => {
         </ScrollArea>
         
         {cartItems.length > 0 && (
-          <div className="border-t border-purple-500/20 pt-6 px-6 pb-6">
+          <div className="absolute bg-black/95 bottom-0 w-full border-t border-purple-500/20 pt-6 px-6 pb-6">
             <div className="flex justify-between text-xl font-bold text-white mb-6">
               <span>Total:</span>
               <span>₽{getTotalPrice().toLocaleString()}</span>
@@ -249,13 +257,12 @@ useEffect(() => {
             <div className="flex gap-3">
               <SheetClose asChild>
                 <Button 
-                  variant="" 
                   className="flex-1 border-purple-500/30 text-white hover:bg-purple-500/20 h-12"
                 >
                   Continue Shopping
                 </Button>
               </SheetClose>
-              <Button className="flex-1 bg-purple-gradient hover:opacity-90 h-12">
+              <Button onClick={handleCheckout} className="flex-1 bg-purple-gradient hover:opacity-90 h-12">
                 Checkout
               </Button>
             </div>

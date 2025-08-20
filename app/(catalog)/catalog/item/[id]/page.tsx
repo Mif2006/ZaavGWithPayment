@@ -146,14 +146,71 @@ const ProductDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
     animateToImage(index, direction);
   };
 
+  const addToLocalStorageCart = (item: any) => {
+    try {
+      // Generate a unique ID for the cart item
+      const cartItemId = `${item.name}-${item.size || 'nosize'}-${Date.now()}`;
+      
+      // Get existing cart from localStorage
+      const storedCart = localStorage.getItem('cart');
+      let cartItems: any[] = storedCart ? JSON.parse(storedCart) : [];
+      
+      // Check if item already exists in cart
+      const existingItemIndex = cartItems.findIndex(
+        (cartItem: any) => cartItem.id === cartItemId
+      );
+      
+      if (existingItemIndex >= 0) {
+        // Update quantity if item exists
+        cartItems[existingItemIndex].quantity += item.quantity;
+      } else {
+        // Add new item
+        cartItems.push({
+          ...item,
+          id: cartItemId,
+          quantity: item.quantity
+        });
+      }
+      
+      // Save updated cart to localStorage
+      localStorage.setItem('cart', JSON.stringify(cartItems));
+      
+      // Dispatch a custom event to notify CartSheet of changes
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
+      
+      // Optional: Show success feedback
+      console.log('Item added to cart:', item);
+      return true;
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      return false;
+    }
+  };
+
   const handleAddToCart = () => {
     if (Object.keys(parsedSizes).length > 0 && !selectedSize) {
       alert('Please select a size');
       return;
     }
+
+    // Create cart item object
+    const cartItem = {
+      productId: product.id,
+      name: product.name,
+      price: product.price,
+      size: selectedSize || undefined,
+      image: product.imgLink,
+      quantity: quantity
+    };
+
+    // Add to localStorage cart
+    const success = addToLocalStorageCart(cartItem);
     
-    // You'll need to implement cart functionality
-    console.log('Add to cart:', { product, quantity, selectedSize });
+    if (success) {
+      console.log('Add to cart:', { product, quantity, selectedSize });
+    } else {
+      alert('Failed to add item to cart');
+    }
   };
 
   const toggleWishlist = () => {
@@ -341,7 +398,7 @@ const ProductDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
 
             {/* Description */}
             <div className="prose prose-invert">
-              <p className="text-gray-200 dark:text-gray-200 leading-relaxed">
+              <p className="text-gray-300 dark:text-gray-200 leading-relaxed">
                 {product.description || `Experience the perfect blend of modern design and timeless elegance with this exquisite ${product.type}. Crafted with meticulous attention to detail, this piece represents the pinnacle of contemporary jewelry artistry. Each element has been carefully considered to create a harmonious balance between sophistication and wearability.`}
               </p>
             </div>

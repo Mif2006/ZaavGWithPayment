@@ -5,7 +5,7 @@ import "./globals.css";
 import { CatalogProduct } from "@/lib/types/catalog";
 import Catalog from "@/components/Catalog";
 import { CatalogProvider } from "@/lib/context/ProductContext";
-import { CartProvider } from "@/lib/context/CartContext";
+// import { CartProvider } from "@/lib/context/CartContext";
 import Navbar from "@/components/main/Navbar";
 import MinimizedNavbar from "@/components/MinimizedNavbar";
 
@@ -34,14 +34,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${playfair.variable} ${montserrat.variable}`}>
-      <CartProvider>
+      {/* <CartProvider> */}
 
       <body>
         <Navbar />
 
         {children}</body>
 
-      </CartProvider>
+      {/* </CartProvider> */}
     </html>
   );
 }

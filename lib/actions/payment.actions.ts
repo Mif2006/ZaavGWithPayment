@@ -15,6 +15,7 @@ export type CreateYooKassaPaymentParams = {
   currency?: string;
   orderId: string;
   userId: string;
+  itemData: string[]; // 🔹 Add itemData as an array of strings
   returnUrl?: string;
 };
 
@@ -26,6 +27,7 @@ export async function createYooKassaPayment(data: CreateYooKassaPaymentParams) {
     value,
     orderId,
     userId,
+    itemData, // 🔹 Destructure itemData
     currency = "RUB",
     returnUrl = "https://evilly-nice-yak.cloudpub.ru",
   } = data;
@@ -46,6 +48,7 @@ export async function createYooKassaPayment(data: CreateYooKassaPaymentParams) {
     metadata: {
       orderId,
       userId,
+      itemData: JSON.stringify(itemData), // 🔹 Store as JSON string since metadata values must be strings
     },
   };
 
@@ -61,18 +64,15 @@ export async function createYooKassaPayment(data: CreateYooKassaPaymentParams) {
 
     // Extract confirmation URL and redirect
     const confirmationUrl = payment.confirmation?.confirmation_url;
-    console.log(confirmationUrl)
-    
+    console.log(confirmationUrl);
 
     if (!confirmationUrl) {
       console.error("YooKassa response missing confirmation URL:", payment);
       throw new Error("No confirmation URL returned from YooKassa");
     }
 
-    // // Redirect user to YooKassa payment page
-    // redirect(confirmationUrl);
-
-    return confirmationUrl
+    // 🔹 Return confirmation URL instead of redirecting directly
+    return confirmationUrl;
   } catch (error) {
     console.error("Error creating YooKassa payment:", error);
     throw new Error("Failed to initiate payment with YooKassa");

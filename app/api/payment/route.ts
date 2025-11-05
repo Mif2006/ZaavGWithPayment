@@ -1,6 +1,7 @@
 // import { createTransaction } from "@/lib/actions/transaction.action";
 import { NextResponse } from "next/server";
 import { YooCheckout } from "@a2seven/yoo-checkout";
+import { sendTelegramMessage } from "@/lib/actions/telegram.actions";
 
 // Initialize YooKassa client
 const yooCheckout = new YooCheckout({
@@ -77,7 +78,7 @@ export async function POST(request: Request) {
       //   orderId,
       //   createdAt: new Date(),
       // });
-
+      await sendTelegramMessage(payment.metadata.itemData)
       console.log("✅ Transaction created for payment:", payment.id);
     } catch (err) {
       console.error("❌ Failed to verify payment:", err);

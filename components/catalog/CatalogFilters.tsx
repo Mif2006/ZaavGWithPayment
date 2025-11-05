@@ -110,6 +110,78 @@ const CatalogFilters: React.FC<CatalogFiltersProps> = ({
                 {collection}
               </button>
             ))}
+             <button 
+                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors bg-purple-500/30 backdrop-blur-md border border-purple-400/40 text-purple-200 dark:text-purple-200 hover:bg-purple-500/40`}
+                style={{
+                  backdropFilter: 'blur(15px)',
+                  WebkitBackdropFilter: 'blur(15px)'
+                }}
+              >
+                Axis
+              </button>
+              <button 
+                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors bg-purple-500/30 backdrop-blur-md border border-purple-400/40 text-purple-200 dark:text-purple-200 hover:bg-purple-500/40`}
+                style={{
+                  backdropFilter: 'blur(15px)',
+                  WebkitBackdropFilter: 'blur(15px)'
+                }}
+              >
+                Aura Terra
+              </button>
+              <button 
+                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors bg-purple-500/30 backdrop-blur-md border border-purple-400/40 text-purple-200 dark:text-purple-200 hover:bg-purple-500/40`}
+                style={{
+                  backdropFilter: 'blur(15px)',
+                  WebkitBackdropFilter: 'blur(15px)'
+                }}
+              >
+                Batur
+              </button>
+              <button 
+                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors bg-purple-500/30 backdrop-blur-md border border-purple-400/40 text-purple-200 dark:text-purple-200 hover:bg-purple-500/40`}
+                style={{
+                  backdropFilter: 'blur(15px)',
+                  WebkitBackdropFilter: 'blur(15px)'
+                }}
+              >
+                12 Wishes
+              </button>
+              <button 
+                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors bg-purple-500/30 backdrop-blur-md border border-purple-400/40 text-purple-200 dark:text-purple-200 hover:bg-purple-500/40`}
+                style={{
+                  backdropFilter: 'blur(15px)',
+                  WebkitBackdropFilter: 'blur(15px)'
+                }}
+              >
+                Sand of time
+              </button>
+              <button 
+                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors bg-purple-500/30 backdrop-blur-md border border-purple-400/40 text-purple-200 dark:text-purple-200 hover:bg-purple-500/40`}
+                style={{
+                  backdropFilter: 'blur(15px)',
+                  WebkitBackdropFilter: 'blur(15px)'
+                }}
+              >
+                Skyline
+              </button>
+              <button 
+                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors bg-purple-500/30 backdrop-blur-md border border-purple-400/40 text-purple-200 dark:text-purple-200 hover:bg-purple-500/40`}
+                style={{
+                  backdropFilter: 'blur(15px)',
+                  WebkitBackdropFilter: 'blur(15px)'
+                }}
+              >
+                Telle Quelle
+              </button>
+              <button 
+                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors bg-purple-500/30 backdrop-blur-md border border-purple-400/40 text-purple-200 dark:text-purple-200 hover:bg-purple-500/40`}
+                style={{
+                  backdropFilter: 'blur(15px)',
+                  WebkitBackdropFilter: 'blur(15px)'
+                }}
+              >
+                Togo
+              </button>
           </div>
         </div>
       )}

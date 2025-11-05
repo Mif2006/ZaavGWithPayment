@@ -1,3 +1,5 @@
+import { fetchCatalogData } from "./catalog.actions";
+
 // lib/cart.utils.ts
 export interface CartItem {
     id: string;
@@ -110,3 +112,30 @@ export interface CartItem {
       return getCartItems();
     }
   };
+
+  export const checkCorrectPrice = async ({ names }: { names: string[] }): Promise<string[]> => {
+    try {
+      const data = await fetchCatalogData();
+  
+      // Map over names to find matching items and get their prices
+      const prices = names.map((name) => {
+        const foundItem = data.find(item => item.name === name);
+  
+        if (foundItem) {
+          console.log("Item found:", foundItem.price);
+          return String(foundItem.price); // ensure it's a string
+        } else {
+          console.log("Item not found:", name);
+          return null; // or "" if you prefer
+        }
+      });
+  
+      // Filter out nulls if you want only valid prices
+      return prices.filter((price): price is string => price !== null);
+  
+    } catch (error) {
+      console.log("Error checking price", error);
+      return []; // return empty array on error
+    }
+  };
+  

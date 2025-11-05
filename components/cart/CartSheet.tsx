@@ -15,6 +15,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { X, ShoppingCart, Plus, Minus, Trash2 } from 'lucide-react';
 import { createYooKassaPayment } from '@/lib/actions/payment.actions';
+import { checkCorrectPrice } from '@/lib/actions/cart.actions';
 
 // Types for cart items
 interface CartItem {
@@ -27,6 +28,8 @@ interface CartItem {
 }
 
 const CartSheet = () => {
+
+  const isFirstRender = React.useRef(true);
   // State for cart items
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(false)
@@ -70,13 +73,18 @@ useEffect(() => {
 }, []); // This dependency array should remain empty
 
   // Save cart to localStorage whenever cartItems change
-  // useEffect(() => {
-  //   try {
-  //     localStorage.setItem('cart', JSON.stringify(cartItems));
-  //   } catch (error) {
-  //     console.error('Error saving cart to localStorage:', error);
-  //   }
-  // }, [cartItems]);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return; // Skip saving on the very first render
+    }
+  
+    try {
+      localStorage.setItem('cart', JSON.stringify(cartItems));
+    } catch (error) {
+      console.error('Error saving cart to localStorage:', error);
+    }
+  }, [cartItems]);
 
   const updateQuantity = (id: string, newQuantity: number) => {
     if (newQuantity < 1) {
@@ -106,28 +114,54 @@ useEffect(() => {
   };
 
   const handleCheckout = async () => {
-    setIsLoading(true)
-
-    const itemNames = cartItems.map(item => item.name);
-
-    const num = getTotalPrice().toFixed(2).toString()
-
-    console.log(num)
-    console.log(itemNames)
-
+    setIsLoading(true);
+  
     try {
+      // Get item names from the cart
+      const itemNames = cartItems.map(item => item.name);
+  
+      // Get prices from your async checkCorrectPrice function (strings)
+      const prices = await checkCorrectPrice({ names: itemNames });
+      console.log("Prices from catalog:", prices);
+  
+      // Convert prices to numbers and calculate total from catalog data
+      const catalogTotal = prices.reduce((total, price, index) => {
+        const quantity = cartItems[index]?.quantity || 1;
+        return total + Number(price) * quantity;
+      }, 0);
+  
+      // Get total from cart calculation
+      const cartTotal = getTotalPrice();
+      console.log("Cart total:", cartTotal, "Catalog total:", catalogTotal);
+  
+      // Check if totals match
+      if (cartTotal !== catalogTotal) {
+        console.log("Price mismatch! Checkout aborted.");
+        alert("There is a discrepancy in item prices. Please refresh your cart.");
+        setIsLoading(false);
+        return;
+      }
+      console.log("hellllo")
+      // Convert total to string with 2 decimals for payment
+      const totalString = cartTotal.toFixed(2);
+  
+      // Proceed with payment
       const confirmationUrl = await createYooKassaPayment({
-        value: num,
+        value: totalString,
         orderId: "12234",
-        userId: '52948',
+        userId: "52948",
         itemData: itemNames,
-      })
-
+      });
+  
       window.location.href = confirmationUrl;
+  
     } catch (error) {
-      console.log(error)
+      console.log("Error during checkout:", error);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
+  
   return (
     <Sheet>
       <SheetTrigger asChild>

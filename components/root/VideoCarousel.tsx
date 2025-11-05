@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { hightlightsSlides } from "@/lib/constants";
 import gsap from "gsap";
-import { pauseImg, playImg, replayImg } from "@/lib/utils";
 import { ScrollTrigger } from "gsap/all";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -40,12 +39,12 @@ const VideoCarousel: React.FC = () => {
     videoSpanRef.current = new Array(hightlightsSlides.length).fill(null);
   }, []);
 
-  // slider movement with gsap (smooth)
+  // slider movement with gsap (smooth, with peek)
   useEffect(() => {
     gsap.to("#slider", {
-      x: -100 * videoId + "%",
+      x: `-${videoId * 80}vw`, // move 80vw per slide so neighbors peek
       duration: 1,
-      ease: "none",
+      ease: "linear", // 👈 constant speed, no acceleration
     });
 
     // animate active dot width
@@ -61,7 +60,7 @@ const VideoCarousel: React.FC = () => {
               : "4vw"
             : "12px",
         duration: 0.5,
-        ease: "none",
+        ease: "linear",
       });
     });
   }, [videoId]);
@@ -88,9 +87,18 @@ const VideoCarousel: React.FC = () => {
     setVideo({
       videoId: id,
       isPlaying: true,
-      isLastVideo: id === hightlightsSlides.length - 1,
+      isLastVideo: false, // 👈 always false while a video is still playing
     });
   };
+  
+  const handleEnded = (i: number) => {
+    if (i < hightlightsSlides.length - 1) {
+      playVideo(i + 1);
+    } else {
+      setVideo({ videoId: i, isPlaying: false, isLastVideo: true }); // 👈 only here
+    }
+  };
+  
 
   const togglePlay = () => {
     const current = videoRef.current[videoId];
@@ -104,13 +112,13 @@ const VideoCarousel: React.FC = () => {
     }
   };
 
-  const handleEnded = (i: number) => {
-    if (i < hightlightsSlides.length - 1) {
-      playVideo(i + 1);
-    } else {
-      setVideo({ videoId: i, isPlaying: false, isLastVideo: true });
-    }
-  };
+//   const handleEnded = (i: number) => {
+//     if (i < hightlightsSlides.length - 1) {
+//       playVideo(i + 1);
+//     } else {
+//       setVideo({ videoId: i, isPlaying: false, isLastVideo: true });
+//     }
+//   };
 
   // progress bar sync
   const handleTimeUpdate = (i: number) => {
@@ -128,19 +136,21 @@ const VideoCarousel: React.FC = () => {
 
   return (
     <div id="carousel" className="w-full">
-      <div className="flex items-center ml-20 overflow-hidden">
+      {/* 👇 allow overflow so neighbors peek */}
+      <div className="flex items-center ml-20">
         <div
           id="slider"
-          className="flex transition-transform duration-500"
-          style={{ width: `${hightlightsSlides.length * 100}%` }}
+          className="flex"
+          style={{ width: `${hightlightsSlides.length * 80}vw` }}
         >
           {hightlightsSlides.map((list, i) => (
             <div
               key={list.id}
-              className="sm:pr-20 pr-10 w-full flex-shrink-0"
-              style={{ width: "100%" }}
+              className="pr-10 flex-shrink-0"
+              style={{ width: "80vw" }}
             >
               <div className="video-carousel_container relative">
+                {/* 👇 overflow-hidden only here to clip video edges */}
                 <div className="w-full h-full flex items-center justify-center rounded-3xl overflow-hidden bg-black">
                   <video
                     id={`video-${i}`}
@@ -152,12 +162,12 @@ const VideoCarousel: React.FC = () => {
                     }}
                     onEnded={() => handleEnded(i)}
                     onTimeUpdate={() => handleTimeUpdate(i)}
-                    className="pointer-events-none min-w-full"
+                    className="pointer-events-none w-full h-full object-cover"
                   >
                     <source src={list.video} type="video/mp4" />
                   </video>
                 </div>
-                <div className="absolute top-12 left-[5%] z-[10]">
+                <div className="absolute text-white top-12 left-[5%] z-[10]">
                   {list.textLists.map((text, index) => (
                     <p
                       key={`${list.id}-${index}`}
@@ -186,7 +196,7 @@ const VideoCarousel: React.FC = () => {
               }}
               onClick={() => playVideo(i)}
               className="mx-2 h-3 bg-gray-200 rounded-full relative cursor-pointer overflow-hidden"
-              style={{ width: i === videoId ? "4vw" : "12px" }} // initial state
+              style={{ width: i === videoId ? "4vw" : "12px" }}
             >
               <span
                 className="absolute h-full w-0 rounded-full"
@@ -198,7 +208,7 @@ const VideoCarousel: React.FC = () => {
           ))}
         </div>
         <button
-          className="ml-4 p-4 rounded-full bg-gray-400 backdrop-blur flex items-center justify-center"
+          className="ml-4 p-4 cursor-pointer hover:scale-110 transition-transform duration-500 rounded-full bg-gray-400 backdrop-blur flex items-center justify-center"
           onClick={isLastVideo ? () => playVideo(0) : togglePlay}
         >
           <img

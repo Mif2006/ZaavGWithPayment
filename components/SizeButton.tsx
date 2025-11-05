@@ -23,7 +23,7 @@ const SizeButton: React.FC<SizeButtonProps> = ({
       disabled={stock === 0}
       className={`p-4 rounded-lg border-2 text-center transition-all h-12 flex items-center justify-center ${
         isSelected
-          ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400'
+          ? 'border-purple-500 bg-purple-500/20 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400'
           : stock > 0
           ? 'border-gray-200 dark:bg-purple-900/20 dark:border-dark-accent hover:border-purple-300 dark:hover:border-purple-500 text-gray-300'
           : 'border-gray-200 dark:border-dark-accent bg-gray-50 dark:bg-dark-accent text-gray-400 dark:text-dark-muted cursor-not-allowed opacity-50'

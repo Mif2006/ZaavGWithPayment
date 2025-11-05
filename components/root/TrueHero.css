@@ -1,0 +1,15 @@
+Prevent background flash
+/* .yeet {
+    background-color: transparent;
+  }
+  
+  .yeet > * {
+    will-change: opacity, transform;
+  }
+  
+  /* Ensure semi-transparent overlay stays visible */
+  .gradient-overlay {
+    background: rgba(255, 255, 255, 0.15);
+    pointer-events: none;
+  }
+   */

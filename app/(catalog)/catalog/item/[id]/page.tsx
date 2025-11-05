@@ -417,7 +417,7 @@ const ProductDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
                       stock={stock}
                       isSelected={selectedSize === size}
                       onSelect={() => setSelectedSize(size)}
-                      className="min-w-[80px]"
+                      className="min-w-[60px]"
                     />
                   ))}
                 </div>

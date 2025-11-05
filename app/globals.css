@@ -4,6 +4,35 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* .gsap-pin-spacer {
+  pointer-events: none;
+}
+.gsap-pin-spacer .your-hero-class {
+  pointer-events: auto;
+} */
+
+/* Tailwind plugin shorthand */
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+video {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+}
+
+
+
+@supports (-webkit-touch-callout: none) {
+  video {
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+  }
+}
+
+
+
 /* IMPORTANT: Add this section */
 @layer components {
   .bg-purple-gradient {

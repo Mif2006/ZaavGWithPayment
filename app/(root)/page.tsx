@@ -1,8 +1,15 @@
 "use client"
 
+import Bestsellers from "@/components/BestSellers";
+import CircleWithPoints from "@/components/CircleWithPoints";
+import Footer from "@/components/main/Footer";
+import Features from "@/components/root/Features";
 import Highlights from "@/components/root/Highlights";
+import Shop from "@/components/root/Shop";
+import Testimonials from "@/components/root/Testimonials";
 import TrueHero from "@/components/root/TrueHero";
 import { createYooKassaPayment } from "@/lib/actions/payment.actions";
+import { sendTelegramMessage } from "@/lib/actions/telegram.actions";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { useState } from "react";
@@ -15,7 +22,7 @@ export default function Home() {
     orderId: "1234",
     userId: "1456",
     itemData: ["haumaru", "nagana"],
-    returnUrl: "https://groundlessly-special-anoa.cloudpub.ru"
+    returnUrl: "https://groundlessly-special-anoa.cloudpub.ru  "
   }
 
   const handleClick = async () => {
@@ -32,14 +39,42 @@ export default function Home() {
       setIsLoading(false);
     }
   };
+
+  const handleTestClick = async () => {
+    await sendTelegramMessage(["Marama", "Hanana"])
+  }
  
   return (
-    <div className="font-sansmin-h-screen min-w-screen overflow-hidden">
+    <div className="font-sans min-h-screen min-w-screen overflow-hidden relative">
+      {/* Full-screen glassmorphism background */}
+      <div 
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ 
+          backgroundImage: "url(/purple2.jpeg)",
+          zIndex: -2
+        }}
+      />
+      
+      {/* Glassmorphism overlay */}
+      <div 
+        className="fixed inset-0 backdrop-filter backdrop-blur-lg backdrop-brightness-125"
+        style={{ zIndex: -1 }}
+      />
+      
+      {/* Content */}
       <TrueHero />
       <Highlights />
-      <div className="w-screen h-screen bg-black">
-
-      </div>
+      <Features />
+      <Testimonials />
+      <Shop />
+      {/* <Bestsellers /> */}
+      <CircleWithPoints />
+      <Footer />
+      
+      {/* Additional glass panel for demonstration */}
+      {/* <div className="fixed bottom-8 right-8 w-64 h-32 bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-2xl border border-white border-opacity-20 shadow-lg flex items-center justify-center">
+        <p className="text-white text-opacity-80 font-light">Glassmorphism Panel</p>
+      </div> */}
     </div>
   );
 }

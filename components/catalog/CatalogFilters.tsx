@@ -1,6 +1,5 @@
-// components/catalog/CatalogFilters.tsx
-import React from 'react';
-import { Search, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, X, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface CatalogFiltersProps {
   searchQuery: string;
@@ -25,6 +24,8 @@ const CatalogFilters: React.FC<CatalogFiltersProps> = ({
   activeCollection,
   handleCollectionClick
 }) => {
+  const [isCollectionsOpen, setIsCollectionsOpen] = useState(true); // State for toggling collections visibility
+
   return (
     <>
       {/* Search Bar */}
@@ -91,26 +92,36 @@ const CatalogFilters: React.FC<CatalogFiltersProps> = ({
       
       {collections.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-sm font-medium text-white dark:text-white mb-2">Collections:</h3>
-          <div className="flex flex-wrap gap-2">
-            {collections.map(collection => (
+          <div className="flex justify-between items-center">
+            <h3 className="text-sm font-medium text-white dark:text-white mb-2">Collections:</h3>
+            <button
+              onClick={() => setIsCollectionsOpen(!isCollectionsOpen)}
+              className="text-white dark:text-white hover:text-purple-500 dark:hover:text-purple-400 transition-colors"
+            >
+              {isCollectionsOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+            </button>
+          </div>
+
+          {isCollectionsOpen && (
+            <div className="flex flex-wrap gap-2">
+              {collections.map(collection => (
+                <button 
+                  key={collection} 
+                  onClick={() => handleCollectionClick(collection)}
+                  className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                    activeCollection === collection
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-purple-500/30 backdrop-blur-md border border-purple-400/40 text-purple-200 dark:text-purple-200 hover:bg-purple-500/40'
+                  }`}
+                  style={activeCollection !== collection ? {
+                    backdropFilter: 'blur(15px)',
+                    WebkitBackdropFilter: 'blur(15px)'
+                  } : {}}
+                >
+                  {collection}
+                </button>
+              ))}
               <button 
-                key={collection} 
-                onClick={() => handleCollectionClick(collection)}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                  activeCollection === collection
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-purple-500/30 backdrop-blur-md border border-purple-400/40 text-purple-200 dark:text-purple-200 hover:bg-purple-500/40'
-                }`}
-                style={activeCollection !== collection ? {
-                  backdropFilter: 'blur(15px)',
-                  WebkitBackdropFilter: 'blur(15px)'
-                } : {}}
-              >
-                {collection}
-              </button>
-            ))}
-             <button 
                 className={`px-3 py-1 rounded-full text-sm font-medium transition-colors bg-purple-500/30 backdrop-blur-md border border-purple-400/40 text-purple-200 dark:text-purple-200 hover:bg-purple-500/40`}
                 style={{
                   backdropFilter: 'blur(15px)',
@@ -182,7 +193,8 @@ const CatalogFilters: React.FC<CatalogFiltersProps> = ({
               >
                 Togo
               </button>
-          </div>
+            </div>
+          )}
         </div>
       )}
     </>

@@ -84,7 +84,7 @@ export const categories = [
       color: 'text-purple-400',
       title: 'Уникальный Дизайн',
       description: 'Авторские дизайны, вдохновленные древними символами и природой Бали.',
-      image: "/IMG_6202.jpg",
+      image: "/IMG_4807.jpg",
 
       status: 100,
       date: 'Январь 2024',

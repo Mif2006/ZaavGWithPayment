@@ -98,7 +98,7 @@ const CatalogCard: React.FC<CatalogCardProps> = ({
         </div>
 
         <p className="text-xs text-gray-300 dark:text-gray-300 mb-4 line-clamp-2 leading-relaxed">
-          {item.collection || 'No description available'}
+          {/* {item.collection || 'No description available'} */}
         </p>
 
         <div className="flex space-x-2">
@@ -134,7 +134,7 @@ const CatalogCard: React.FC<CatalogCardProps> = ({
                 : 'Add to Cart'}
             </span>
           </motion.button>
-        </div>
+        </div> 
       </div>
     </motion.div>
   );

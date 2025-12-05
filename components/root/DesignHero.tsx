@@ -9,7 +9,6 @@ const Hero = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  // Animate between videos
   const animateVideo = (direction: "left" | "right") => {
     const nextIndex =
       direction === "left"
@@ -25,7 +24,6 @@ const Hero = () => {
 
     if (!current || !next) return;
 
-    // Prepare next video position
     gsap.set(next, {
       x: direction === "left" ? "-100%" : "100%",
       opacity: 0,
@@ -33,7 +31,6 @@ const Hero = () => {
     });
     gsap.set(current, { zIndex: 1 });
 
-    // Animate current out
     gsap.to(current, {
       x: direction === "left" ? "100%" : "-100%",
       opacity: 0,
@@ -41,7 +38,6 @@ const Hero = () => {
       ease: "power2.inOut",
     });
 
-    // Animate next in
     gsap.to(next, {
       x: "0%",
       opacity: 1,
@@ -53,7 +49,6 @@ const Hero = () => {
   };
 
   useEffect(() => {
-    // Initialize: show only the first video
     videos.forEach((_, i) => {
       if (videoRefs.current[i]) {
         gsap.set(videoRefs.current[i], {
@@ -69,21 +64,20 @@ const Hero = () => {
   const handleMoveRight = () => animateVideo("right");
 
   return (
-    <div className="w-screen px-2 min-h-screen h-[120vh] flex items-center justify-center pt-[8vh]">
-      <div className="w-full flex flex-row gap-2 items-center">
-        {/* Left column */}
-        <div className="flex flex-col w-[50vw] gap-2 pt-[2px]">
+    <div className="w-screen min-h-screen h-[120vh] flex items-center justify-center pt-[8vh] px-2">
+      <div className="w-full flex flex-col lg:flex-row gap-2 items-center">
+        {/* Left side (text + 2 cards) */}
+        <div className="flex flex-col w-full lg:w-[50vw] gap-2">
+          {/* Text Card */}
           <div className="relative overflow-hidden p-4 sm:p-6 md:p-8 flex flex-col lg:flex-row lg:justify-between 
-              w-[50vw] h-auto min-h-[35vh] rounded-[37px] bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500 
+              w-full h-auto min-h-[35vh] rounded-[37px] bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500 
               bg-gray-400 will-change-transform backface-hidden">
-            {/* Decorative elements */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-4 right-4 w-20 h-20 border border-white/30 rounded-full"></div>
               <div className="absolute bottom-4 left-4 w-16 h-16 border border-white/20 rounded-lg rotate-45"></div>
               <div className="absolute top-1/2 left-1/4 w-12 h-12 bg-white/10 rounded-full blur-sm"></div>
             </div>
 
-            {/* Text content */}
             <div className="relative z-10 flex flex-col gap-4 md:gap-6 flex-1">
               <div className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6">
                 <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-[36px] text-transparent bg-clip-text bg-gradient-to-r from-purple-900 to-indigo-500 font-semibold leading-tight">
@@ -106,17 +100,13 @@ const Hero = () => {
           </div>
 
           {/* Two cards below */}
-          <div className="flex flex-row gap-2">
-            <div className="relative h-[55vh] w-[25vw] bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500 bg-gray-400 rounded-[27px] overflow-hidden group">
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/40 rounded-full animate-pulse"></div>
-                <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-purple-300/60 rounded-full animate-pulse delay-300"></div>
-                <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 bg-white/30 rounded-full animate-pulse delay-500"></div>
-              </div>
+          <div className="flex flex-col sm:flex-row gap-2">
+            {/* Card 1 */}
+            <div className="relative h-[40vh] sm:h-[55vh] w-full sm:w-1/2 bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500 bg-gray-400 rounded-[27px] overflow-hidden group">
               <img
                 alt="image2"
                 src="shop.jpg"
-                className="h-[80%] w-full object-cover object-center rounded-[27px] will-change-transform backface-hidden bg-gray-300"
+                className="h-[80%] w-full object-cover object-center rounded-[27px]"
               />
               <div className="relative z-10 flex justify-between h-[20%] px-[12px] items-center">
                 <h3 className="font-semibold text-[20px]">Наш Магазин</h3>
@@ -128,15 +118,12 @@ const Hero = () => {
               </div>
             </div>
 
-            <div className="relative h-[55vh] w-[25vw] bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500 bg-gray-400 rounded-[27px] overflow-hidden group">
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                {/* <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-indigo-400/20 rounded-full blur-xl"></div>
-                <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-indigo-300/15 rounded-full blur-lg"></div> */}
-              </div>
+            {/* Card 2 */}
+            <div className="relative h-[40vh] sm:h-[55vh] w-full sm:w-1/2 bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500 bg-gray-400 rounded-[27px] overflow-hidden group">
               <img
                 src="IMG_4805.jpg"
                 alt="shop"
-                className="h-[80%] w-full object-cover object-center rounded-[27px] will-change-transform backface-hidden bg-gray-300"
+                className="h-[80%] w-full object-cover object-center rounded-[27px]"
               />
               <div className="relative z-10 flex justify-between h-[20%] px-[12px] items-center">
                 <h3 className="font-semibold text-[20px]">Новинки</h3>
@@ -150,49 +137,43 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* Right column (video carousel) */}
-       {/* Right column (video carousel) */}
-<div className="relative w-[50vw] h-[90vh] isolation-isolate ">
-  {/* Gradient background on its own layer */}
+        {/* Right column (video carousel) — hidden on mobile */}
+        <div className="hidden lg:block relative w-[50vw] h-[90vh] isolation-isolate">
+          {videos.map((video, index) => (
+            <video
+              key={index}
+              ref={(el) => {
+                videoRefs.current[index] = el;
+              }}
+              src={video}
+              className="absolute inset-0 w-full h-full object-cover bg-black"
+              autoPlay
+              muted
+              loop
+            />
+          ))}
 
-  {/* Video layer */}
-  {videos.map((video, index) => (
-    <video
-      key={index}
-      ref={(el) => {
-        videoRefs.current[index] = el;
-      }}
-      src={video}
-      className="absolute inset-0 w-full h-full object-cover  bg-black will-change-transform"
-      autoPlay
-      muted
-      loop
-    />
-  ))}
-
-  {/* Controls */}
-  <div className="absolute px-[12px] z-[50] flex justify-between bottom-0 left-0 right-0 h-16 border-t border-transparent">
-    <div className="rounded-full text-white flex items-center justify-center h-[6vh] w-[6vh] bg-gray-900 opacity-0"></div>
-    <div className="flex flex-row gap-1">
-      <div
-        className="rounded-full text-white cursor-pointer flex items-center justify-center h-[6vh] w-[6vh] bg-gray-900 transition-transform duration-500 hover:scale-105"
-        onClick={handleMoveLeft}
-      >
-        <MoveLeft />
-      </div>
-      <div
-        className="rounded-full text-white cursor-pointer flex items-center justify-center h-[6vh] w-[6vh] bg-gray-900 transition-transform duration-500 hover:scale-105"
-        onClick={handleMoveRight}
-      >
-        <MoveRight />
-      </div>
-    </div>
-    <div className="rounded-full text-white cursor-pointer flex items-center justify-center h-[6vh] w-[6vh] bg-gray-900 transition-transform duration-500 hover:scale-105">
-      <MoveUpRight />
-    </div>
-  </div>
-</div>
-
+          <div className="absolute px-[12px] z-[50] flex justify-between bottom-0 left-0 right-0 h-16 border-t border-transparent">
+            <div className="rounded-full text-white flex items-center justify-center h-[6vh] w-[6vh] bg-gray-900 opacity-0"></div>
+            <div className="flex flex-row gap-1">
+              <div
+                className="rounded-full text-white cursor-pointer flex items-center justify-center h-[6vh] w-[6vh] bg-gray-900 transition-transform duration-500 hover:scale-105"
+                onClick={handleMoveLeft}
+              >
+                <MoveLeft />
+              </div>
+              <div
+                className="rounded-full text-white cursor-pointer flex items-center justify-center h-[6vh] w-[6vh] bg-gray-900 transition-transform duration-500 hover:scale-105"
+                onClick={handleMoveRight}
+              >
+                <MoveRight />
+              </div>
+            </div>
+            <div className="rounded-full text-white cursor-pointer flex items-center justify-center h-[6vh] w-[6vh] bg-gray-900 transition-transform duration-500 hover:scale-105">
+              <MoveUpRight />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

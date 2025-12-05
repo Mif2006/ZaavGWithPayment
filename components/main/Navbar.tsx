@@ -196,10 +196,12 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Navigation Menu - UNCHANGED */}
-        <div className={`lg:hidden absolute top-full left-0 right-0 bg-black/95 backdrop-blur-md border-b border-purple-500/20 transition-all duration-300 ease-in-out ${
-          isMenuOpen ? 'opacity-100 visible max-h-96' : 'opacity-0 invisible max-h-0'
-        }`}>
-          <div className='px-4 py-6 space-y-2'>
+        <div
+  className={`lg:hidden absolute top-full left-0 right-0 bg-black/95 backdrop-blur-md border-b border-purple-500/20 transition-all duration-300 ease-in-out overflow-hidden ${
+    isMenuOpen ? 'opacity-100 visible max-h-[80vh]' : 'opacity-0 invisible max-h-0'
+  }`}
+>
+  <div className="px-4 py-6 space-y-2 overflow-y-auto max-h-[80vh]">
             {navItems.map((item, index) => {
               const Icon = item.icon;
               
